@@ -52,17 +52,7 @@ public class MensajeGuardado : MonoBehaviour
             mensaje.SetActive(false);
         }
 
-        if (Input.GetKey(KeyCode.H))
-        {
-            gestorGuardarCargar.guardarDatos(new DatosPartida(
-            jugador, //posicion jugador
-            false,   // jefe1 muerto
-            false,   // jefe2 muerto
-            false,   // tiene alame jefe1
-            false,   // tiene alma  jefe2
-            false,   // alama1colocada
-            false)); // alma 2colocada 
-        }
+ 
 
         
 
