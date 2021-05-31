@@ -3,44 +3,54 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+
+
 /// <summary>
-///  Cuando este estado se ejecuta se hace visible el objeto guadagna.
+/// Comportamiento que controla la cantidad de tiempo que está reprodución la animadión mareado.
 /// </summary>
 
-public class ComportamientoAtaqueSword : StateMachineBehaviour
-{
-    private IAnight ia;
-    private ControlShader cs;
-    private Rigidbody rb;
-    GameObject jugador;
-    private NavMeshAgent agent;
 
+public class ComportamientoMareadoMutante : StateMachineBehaviour
+{
+    float tiempo = 0;
+    SaludEnemigo saludEnemigo;
+    IAmutante iamuntate;
+    NavMeshAgent agent;
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        ia = animator.GetComponent<IAnight>();
-        ia.guadagna.SetActive(true);
-        cs = animator.GetComponent<ControlShader>();
-        rb = animator.GetComponent<Rigidbody>();
-        jugador = ia.Jugador;
-        agent = animator.GetComponent<NavMeshAgent>();
-      
         
+        saludEnemigo = animator.GetComponent<SaludEnemigo>();
+        iamuntate = animator.GetComponent<IAmutante>();
+        agent = animator.GetComponent<NavMeshAgent>();
 
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
-   override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-   {
+     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+     {
+
+        tiempo += Time.deltaTime;
+        agent.isStopped = true;
         agent.velocity = Vector3.zero;
-        rb.transform.LookAt(jugador.transform.position);
+
+        if (tiempo > 1 || saludEnemigo.currentHealth <= saludEnemigo.maxHealth * 0.33)
+        {
+            animator.SetTrigger("finMareado");
+        }
+
+    
+
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-
+        iamuntate.asignarVelocidad(iamuntate.velocidadRecuperacion);
+        tiempo = 0;
+        iamuntate.perseguirJugador = true;
+        agent.isStopped = false;
 
     }
 

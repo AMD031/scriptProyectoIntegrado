@@ -59,23 +59,23 @@ public class MensajeGuardado : MonoBehaviour
         // al pulsal e intenta guarda los datos de la partida.
         if (dentroZonaGuardado && Input.GetKey(KeyCode.E))
         {
-            Debug.Log("intentando guardar");
+
 
 
             if (gestorGuardarCargar.Datos != null)
             {
                 imagenGuardado.SetActive(true);
 
-                Time.timeScale = 0;
+ 
                 gestorGuardarCargar.Datos.Posicion[0] = jugador.transform.position.x;
                 gestorGuardarCargar.Datos.Posicion[1] = jugador.transform.position.y;
                 gestorGuardarCargar.Datos.Posicion[2] = jugador.transform.position.z;
                 gestorGuardarCargar.guardarDatos(gestorGuardarCargar.Datos);
 
+
+         
+
                 Invoke("restuaraPantalla", 0.4f);
-
-                Time.timeScale = 1;
-
             }
             else
             {

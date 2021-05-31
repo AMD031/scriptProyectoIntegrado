@@ -14,14 +14,17 @@ public class ComportamientoMareado : StateMachineBehaviour
 {
     float tiempo = 0;
     SaludEnemigo saludEnemigo;
-    IAmutante iamutante;
+    IAnight ianight;
+    NavMeshAgent agent;
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         
         saludEnemigo = animator.GetComponent<SaludEnemigo>();
-        iamutante = animator.GetComponent<IAmutante>();
+        ianight = animator.GetComponent<IAnight>();
+        agent = animator.GetComponent<NavMeshAgent>();
+
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -29,20 +32,26 @@ public class ComportamientoMareado : StateMachineBehaviour
      {
 
         tiempo += Time.deltaTime;
-   
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+
         if (tiempo > 1 || saludEnemigo.currentHealth <= saludEnemigo.maxHealth * 0.33)
         {
             animator.SetTrigger("finMareado");
         }
 
+    
 
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        ianight.asignarVelocidad(ianight.velocidadAgenteAnterior);
         tiempo = 0;
-        iamutante.asignarVelocidad(iamutante.velocidadRecuperacion);
+        ianight.perseguirJugador = false;
+        agent.isStopped = false;
+
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

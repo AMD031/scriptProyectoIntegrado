@@ -10,7 +10,7 @@ using UnityEngine.AI;
 public class IAmutante : MonoBehaviour
 {
     //private static int ANIMATOR_PARAM_WALK_SPEED = Animator.StringToHash("andarVelocidad");
-   
+
     public GameObject Jugador;
     private Animator _animator;
     private NavMeshAgent _agent;
@@ -32,8 +32,8 @@ public class IAmutante : MonoBehaviour
     {
         this._animator = this.GetComponent<Animator>();
         this._agent = this.GetComponent<NavMeshAgent>();
-       // _agent.updateRotation = false;
-        saludJugador =  Jugador.gameObject.GetComponent<SaludJugador>();
+        // _agent.updateRotation = false;
+        saludJugador = Jugador.gameObject.GetComponent<SaludJugador>();
         saludEnemigo = gameObject.GetComponent<SaludEnemigo>();
         //rb = gameObject.GetComponent<Rigidbody>();
 
@@ -48,7 +48,7 @@ public class IAmutante : MonoBehaviour
     {
         // cambia la animacion en función de la velocidad del agente.
         float speed = this._agent.velocity.magnitude;
-        this._animator.SetFloat("velocidadAndar", speed);      
+        this._animator.SetFloat("velocidadAndar", speed);
     }
 
     //Detetien la ia del enemigo cuando el jugador esta muerto.
@@ -72,44 +72,40 @@ public class IAmutante : MonoBehaviour
     {
         if (perseguirJugador)
         {
-          _agent.SetDestination(Jugador.transform.position);
+            _agent.SetDestination(Jugador.transform.position);
         }
         comprobarSalud();
     }
 
-   //activa la generacion de barreras de la segunda fase del enemigo.
+    //activa la generacion de barreras de la segunda fase del enemigo.
     public void activarGenerardorBarreras()
     {
         generadorDeBarreras.para = !generadorDeBarreras.para;
     }
 
 
-    
+
     public void continuarIA()
     {
         _agent.isStopped = false;
     }
 
 
- 
 
 
-/*    void rotarAgente()
-    {
-        Vector3 targetPosition = _agent.pathEndPosition;
-        Vector3 targetPoint = new Vector3(targetPosition.x, transform.position.y, targetPosition.z);
-        Vector3 _direction = (targetPoint - transform.position).normalized;
 
-        // Debug.Log(_direction);
-
-
-        if (_direction != Vector3.zero)
+    /*    void rotarAgente()
         {
-            Quaternion _lookRotation = Quaternion.LookRotation(_direction);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, _lookRotation, 360);
-        }
-
-  }*/
+            Vector3 targetPosition = _agent.pathEndPosition;
+            Vector3 targetPoint = new Vector3(targetPosition.x, transform.position.y, targetPosition.z);
+            Vector3 _direction = (targetPoint - transform.position).normalized;
+            // Debug.Log(_direction);
+            if (_direction != Vector3.zero)
+            {
+                Quaternion _lookRotation = Quaternion.LookRotation(_direction);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, _lookRotation, 360);
+            }
+      }*/
 
 
 
@@ -130,13 +126,13 @@ public class IAmutante : MonoBehaviour
         _agent.velocity = Vector3.zero;
 
     }
-   
+
 
 
     /// <summary>
     /// llama a un efecto 
     /// </summary>
-    public  void efectoDisolver()
+    public void efectoDisolver()
     {
         controlShader.inicarEfectoDisolver = true;
     }

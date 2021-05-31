@@ -31,7 +31,7 @@ public static class ValoresAtaque
     public static int dagnoContrataqueJugadorNight = 5;
 
     //jefe mutante daños hacia el jugador
-    public const int dagnoGuadagnaNightJugador = 50;
+    public const int dagnoGuadagnaNightJugador = 25;
     public const int dagnoHechizoNightJugador = 3;
     public const int dagnoHechizo3NightJugador = 10;
 

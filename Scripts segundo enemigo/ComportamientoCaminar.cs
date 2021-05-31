@@ -21,8 +21,8 @@ public class ComportamientoCaminar : StateMachineBehaviour
     private float tiempoTeleportacion = 0;
     private int indicePos;
     private LogicaPersonaje1 logicaJugador;
-    public bool ataqueGuadagna = false; 
-    public bool teleportacionActiva = true;
+    public bool ataqueGuadagna = false;  
+    public bool teleportacionActiva = true; 
     private int contadorAtaqueMagico1 = 0;
     public int contadorAtaqueGuadagna = 0;
     public bool ataqueMagico2 = false;
@@ -32,7 +32,8 @@ public class ComportamientoCaminar : StateMachineBehaviour
     NavMeshAgent agent;
     int posHuida = 0;
     private GameObject[] portales;
-
+    bool ejecuntadoAtaqueGuadagna = false;
+    ControlShader cs;
 
     /// <summary>
     /// cambia de posicion al azar al enemigo 
@@ -43,6 +44,9 @@ public class ComportamientoCaminar : StateMachineBehaviour
         tiempoTeleportacion = 0;
         int n = Random.Range(0, 8);
         ia.teleportar(puntosFase1[n].transform.position);
+
+
+
     }
 
 
@@ -79,6 +83,195 @@ public class ComportamientoCaminar : StateMachineBehaviour
         agent.velocity = Vector3.zero;
     }
 
+    private void metodoHuida( Animator animator)
+    {
+        if (posHuida < 3)
+        {
+            ataqueGuadagna = false;
+            detenerPeseguir();
+            teleportacionActiva = false;
+
+        }
+
+        if (posHuida >= 3)
+        {
+            agent.isStopped = false;
+            agent.speed = 9;
+            agent.SetDestination(huida[3].transform.position);
+
+        }else if(!ia.teleportacionIniciada && tiempoTeleportacion > 3 && posHuida < huida.Length)
+        {
+            //Debug.Log(huida[posHuida].name);
+            ia.perseguirJugador = false;
+            ia.teleportar(huida[posHuida].transform.position);
+            posHuida++;
+        }
+
+
+
+        if (Vector3.Distance(huida[3].transform.position, rb.transform.position) < 0.5f)
+        {
+            if (!ia.dentroDeLaZona.dentro)
+            {
+                portales[0].SetActive(false);
+                logicaJugador.enemigoFijado = false;
+                ia.controlShader.quitarLineas();
+            }
+
+
+            if (ia.dentroDeLaZona.dentro)
+            {
+                animator.SetBool("segundaFaseIntro", true);
+                portales[1].SetActive(true);
+                portales[2].SetActive(true);
+            }
+
+        }
+    }
+    
+    /// <summary>
+    /// Método que inicia la secuencia de ataque del juegador alternado entre ataca a distacia y
+    /// ataque cercano.
+    /// </summary>
+    /// <param name="animator"></param>
+    /// <param name="distancia"></param>
+
+    private void secuenciaDeAtaque(Animator animator, float distancia)
+    {
+
+        // fase de ataque con fuego.
+        if (
+
+            teleportacionActiva 
+            && !ia.teleportacionIniciada
+            && indicePos < puntosFase1.Length 
+            && tiempoTeleportacion > 3
+            && !ia.ataqueMagico1.activeSelf
+            && animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals("Idle") 
+            && !animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals("Magic Heal")
+ 
+            )
+        {
+
+
+                //quita la guadaña
+                if (ia.guadagna.activeSelf)
+                {
+                    ia.desparecerGuadagna();
+                    ia.guadagna.SetActive(false);
+                    ia.GuadagnaActiva = false;
+                }
+
+           
+                ia.perseguirJugador = false;
+                llamarTeleportacion();
+                if (contadorAtaqueMagico1 == cantidadAtaques)
+                {
+                    cantidadAtaques = Random.Range(0, 5);
+                    ataqueMagico2 = true;
+                    teleportacionActiva = false;
+
+                }
+                else
+                {
+                    detenerPeseguir();
+                    contadorAtaqueMagico1++;
+                    animator.SetTrigger("ataqueMagico1");
+                    tiempoTeleportacion = 0;
+
+
+                }
+ 
+     
+
+
+
+        }
+
+        if (indicePos >= puntosFase1.Length)
+        {
+            // ia.aparecer();
+            indicePos = 0;
+        }
+
+
+        if (ataqueMagico2 && !ia.teleportacionIniciada)
+        {
+            detenerPeseguir();
+            animator.SetTrigger("ataqueMagico2");
+            ataqueMagico2 = false;
+
+        }
+
+        // inicia el ataque con guadaña 
+        if ( ataqueGuadagna && !ia.teleportacionIniciada /* && tiempoTeleportacion > 1.5f*/)
+        {
+
+
+            if (ejecuntadoAtaqueGuadagna && !animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals("Sword And Shield Attack"))
+            {
+                ejecuntadoAtaqueGuadagna = false;
+            }
+
+
+            ///logicaJugador.enemigoFijado = false;
+
+            if (distancia > 6)
+            {
+                teleportarCercaJugador();
+            }
+
+
+            if (distancia > 2 && distancia < 7 &&
+                !animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals("Magic Heal") &&
+                !animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals("Dizzy Idle") &&
+                !animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals("Standing 2H Magic Attack 05") &&
+                !animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals("Sword And Shield Attack")
+               )
+            {
+                ia.recuperaVelocidad();
+                ia.perseguirJugador = true;
+
+            }
+        
+
+
+            if (distancia < 2)
+            {
+                detenerPeseguir();
+
+                if (contadorAtaqueGuadagna < 7)
+                {
+                    if (!ejecuntadoAtaqueGuadagna)
+                    {
+                        ejecuntadoAtaqueGuadagna = true;
+                        contadorAtaqueGuadagna++;
+                        detenerPeseguir();
+                        animator.SetTrigger("usarGuadagna");
+                        detenerPeseguir();
+                    }
+
+                }
+                else
+                {
+                    cs.iniciarEfectoDesaparecerGuadagna = true;
+                    detenerPeseguir();
+                    contadorAtaqueMagico1 = 0;
+                    ataqueGuadagna = false;
+                    teleportacionActiva = true;
+                   
+                    
+
+                }
+
+            }
+
+
+        }
+
+
+    }
+
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -90,6 +283,7 @@ public class ComportamientoCaminar : StateMachineBehaviour
         jugador.GetComponent<LogicaPersonaje1>();
         puntosJugador = ia.puntosJugador;
         logicaJugador = jugador.GetComponent<LogicaPersonaje1>();
+        cs = ia.GetComponent<ControlShader>();
         //contadorAtaqueMagico1 = 0;
         //tiempoTeleportacion = 3;
 
@@ -104,152 +298,17 @@ public class ComportamientoCaminar : StateMachineBehaviour
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
    {
-
-     
-
-
         tiempoTeleportacion += Time.deltaTime;
         float distancia = Vector3.Distance(rb.transform.position, jugador.transform.position);
        // cambia de posicion al enemigo y realiza un ataque. Cuando el número de ataque llega al máximo 
        // cambia el tipo de ataque.
         if (saludEnemigo.currentHealth > saludEnemigo.maxHealth *0.33)
         {
-
-
-             // fase de ataque con fuego.
-             if (  teleportacionActiva && !ia.teleportacionIniciada && indicePos < puntosFase1.Length && tiempoTeleportacion > 3)
-              {
-                ia.perseguirJugador = false;
-                llamarTeleportacion();
-                if (contadorAtaqueMagico1 == cantidadAtaques)
-                {
-                    cantidadAtaques = Random.Range(0, 5);
-                    ///teleportacionActiva = false;
-                    //ataqueGuadagna = true;
-                    ataqueMagico2 = true;
-                    teleportacionActiva = false;
-
-                }
-                else
-                {
-                    contadorAtaqueMagico1++;
-                    animator.SetTrigger("ataqueMagico1");
-                }
-        
-
-              }
-
-              if (indicePos >= puntosFase1.Length)
-              {
-                 // ia.aparecer();
-                  indicePos = 0;
-              }
-
-
-            if (ataqueMagico2 && !ia.teleportacionIniciada)
-            {
-                animator.SetTrigger("ataqueMagico2");
-                ataqueMagico2 = false;
-        
-            }
-
-            // inicia el ataque con guadaña 
-            if (  ataqueGuadagna  && !ia.teleportacionIniciada /* && tiempoTeleportacion > 1.5f*/)
-            {
-
-      
-                logicaJugador.enemigoFijado = false;
-
-                if (distancia>6)
-                {
-                    teleportarCercaJugador();
-
-                }
-
-
-                if (distancia > 2 && distancia < 6  && 
-                    !animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals("Magic Heal") &&
-                    !animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Equals("Dizzy Idle"))
-                {
-                    ia.recuperaVelocidad();
-                    ia.perseguirJugador = true;
-               
-                }
-
-                if (distancia <2)
-                {
-                    detenerPeseguir();
-          
-                    if (contadorAtaqueGuadagna < 7)
-                    {
-                        contadorAtaqueGuadagna++;
-                        detenerPeseguir();
-                        animator.SetTrigger("usarGuadagna");
-
-
-                    }
-                    else
-                    {
-                        detenerPeseguir();
-                        contadorAtaqueMagico1 = 0;
-                        ataqueGuadagna = false;
-                        teleportacionActiva = true;
-
-                    }
-
-                }
-
-
-
-
-
-
-            }
-
+            secuenciaDeAtaque(animator, distancia);
         }
         else
         {
-            // Cuando la bara de huida se
-            if (!ia.teleportacionIniciada && tiempoTeleportacion > 3 && posHuida < huida.Length  )
-            {
-                //Debug.Log(huida[posHuida].name);
-                ia.teleportar(huida[posHuida].transform.position); 
-                tiempoTeleportacion = 0;
-                posHuida++;
-            }
-
-
-            if (posHuida > 3)
-            {
-
-                agent.SetDestination(huida[3].transform.position);
-            }
-
-            if (Vector3.Distance(huida[3].transform.position, rb.transform.position) < 0.5f ) 
-            {
-                if (!ia.dentroDeLaZona.dentro)
-                {
-                    portales[0].SetActive(false);
-                    logicaJugador.enemigoFijado = false;
-                    ia.controlShader.quitarLineas();
-
-                }
-
-
-                if (ia.dentroDeLaZona.dentro)
-                {
-                    animator.SetBool("segundaFaseIntro",true);
-                    portales[1].SetActive(true);
-                    portales[2].SetActive(true);
-                    
-                }
-
-            }
-
-
-
-
-
+            metodoHuida(animator);
         }
 
 

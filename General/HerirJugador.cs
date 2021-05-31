@@ -140,7 +140,6 @@ public class HerirJugador : MonoBehaviour
             contadoTrigger++;
             if (contadoTrigger == 1)
             {
-                Debug.Log(contadorEscudo);
                 anim.SetTrigger("golpeoEscudo");
             }
 

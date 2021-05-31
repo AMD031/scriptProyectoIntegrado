@@ -17,7 +17,7 @@ public class SaludEnemigo : MonoBehaviour
     private void Start()
     {
 
-        currentHealth = /*10*/ maxHealth;
+       // currentHealth = maxHealth ;
         barraSaludEnemigo.SetMaxHealth(maxHealth);
     }
 

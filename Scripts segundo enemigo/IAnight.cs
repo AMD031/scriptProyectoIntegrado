@@ -22,7 +22,7 @@ public class IAnight : MonoBehaviour
 
     [HideInInspector]
     public bool perseguirJugador = false;
-    private float velocidadAgenteAnterior;
+    public float velocidadAgenteAnterior = 9;
 
     public GameObject[] puntosJugador;
     public GameObject[] puntos;
@@ -48,6 +48,7 @@ public class IAnight : MonoBehaviour
     public DentroDeLaZona dentrodelazona;
 
     public bool animacionGiro = false;
+    public bool GuadagnaActiva = false;
 
     private void Awake()
     {
@@ -236,7 +237,10 @@ public class IAnight : MonoBehaviour
 
     }
 
-
+    public void asignarVelocidad(float velocidad)
+    {
+        _agent.speed = velocidad;
+    }
 
 
 

@@ -98,7 +98,7 @@ public class LogicaPersonaje1 : MonoBehaviour
             enemigo = enemigoEncontrado.transform;
             if (enemigo && Vector3.Distance(enemigo.transform.position, transform.position) <= rangoFijado)
              {
-                enemigoFijado = true;
+                enemigoFijado = !enemigoFijado;
                 //enemigo.GetChild(2).gameObject.SetActive(true);
                 enemigo.GetComponent<ControlShader>().ponerLineas();
           

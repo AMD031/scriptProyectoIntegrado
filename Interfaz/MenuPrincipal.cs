@@ -30,6 +30,7 @@ public class MenuPrincipal : MonoBehaviour
         DatosPartida datos = GuardarDatos.CargarDatos();
         if (datos == null)
         {
+            GuardarDatos.Guardar(new DatosPartida(posJugador));
             cn.cargarNivel(1);
         }
         else
@@ -45,7 +46,15 @@ public class MenuPrincipal : MonoBehaviour
     /// </summary>
     public void botonSiPulsado()
     {
+
+
         GuardarDatos.Guardar(new DatosPartida(posJugador));
+        if (GestorGuardarCargar.instance)
+        {
+            GestorGuardarCargar.instance.Datos = GuardarDatos.CargarDatos();
+        }
+
+
         mensaje.SetActive(false);
         cn.cargarNivel(1);
 

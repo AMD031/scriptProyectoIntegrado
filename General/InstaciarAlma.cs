@@ -20,8 +20,7 @@ public class InstaciarAlma : MonoBehaviour
 
     private void Start()
     {
-
-       // gestorGuardar = GameObject.FindGameObjectWithTag("gestorGuardarCargar").GetComponent<GestorGuardarCargar>();
+      gestorGuardar = GameObject.FindGameObjectWithTag("gestorGuardarCargar").GetComponent<GestorGuardarCargar>();
     }
 
     private void Update()

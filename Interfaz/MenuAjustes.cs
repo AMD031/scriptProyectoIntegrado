@@ -194,9 +194,9 @@ public class MenuAjustes : MonoBehaviour
         audioMusica.value = -20;
         audioEfectos.value = 0;
         resolutionDropdown.value = 4;
-        graficosDropdown.value = 5;
+        graficosDropdown.value = 0;
         pantallaCompleta.isOn = true;
-       return new Ajustes(0, -20, 0, 4, 5, true);
+       return new Ajustes(0, -20, 0, 4, 0, true);
 
     }
 

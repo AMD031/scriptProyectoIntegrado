@@ -11,6 +11,8 @@ public class ComportamientoAtaqueMagico2 : StateMachineBehaviour
     private IAnight ia;
     private Rigidbody rb;
     private ComportamientoCaminar comportamientoCaminar;
+    private LogicaPersonaje1 logicaPersonaje;
+    private ControlShader controlShader;
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -18,7 +20,9 @@ public class ComportamientoAtaqueMagico2 : StateMachineBehaviour
        ia = animator.GetComponent<IAnight>();
        rb = animator.GetComponent<Rigidbody>();
        ia.aura.SetActive(true);
-        comportamientoCaminar = animator.GetBehaviour<ComportamientoCaminar>();
+       comportamientoCaminar = animator.GetBehaviour<ComportamientoCaminar>();
+       logicaPersonaje = ia.Jugador.GetComponent<LogicaPersonaje1>();
+       controlShader = animator.GetComponent<ControlShader>();
 
     }
 
@@ -39,8 +43,12 @@ public class ComportamientoAtaqueMagico2 : StateMachineBehaviour
         //----------------
         comportamientoCaminar.ataqueGuadagna = true;
         comportamientoCaminar.contadorAtaqueGuadagna = 0;
+        logicaPersonaje.enemigoFijado = false;
+        controlShader.quitarLineas();
 
-              
+
+
+
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

@@ -17,13 +17,19 @@ public class ComportamientoAtaqueMagico1 : StateMachineBehaviour
     private bool llamadoPos = false;
     private Vector3 posJugador = Vector3.zero;
     private int contadorAtaque = 0;
-    
 
+    public float GetCurrentAnimatorTime(Animator targetAnim, int layer = 0)
+    {
+        AnimatorStateInfo animState = targetAnim.GetCurrentAnimatorStateInfo(layer);
+        float currentTime = animState.normalizedTime % 1;
+        return currentTime;
+    }
 
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        
         ia = animator.GetComponent<IAnight>();
         jugador = GameObject.FindGameObjectWithTag("Player");
         rb = animator.GetComponent<Rigidbody>();
@@ -35,12 +41,13 @@ public class ComportamientoAtaqueMagico1 : StateMachineBehaviour
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
    {
+        ia.perseguirJugador = false;
         tiempoPosJugador += Time.deltaTime;
 
        // if (tiempoPosJugador > 0.2)
        // {
          
-
+       
             //Se toma la posición del jugador
             if (tiempoPosJugador > 0.1 && tiempoPosJugador < 0.5)
             {
@@ -65,6 +72,7 @@ public class ComportamientoAtaqueMagico1 : StateMachineBehaviour
                //finaliza el ataque 
                 if (contadorAtaque == 20)
                 {
+                    ia.detenerAtaqueMagico1();
                     animator.SetTrigger("ataqueMagico1");
                 }
 
@@ -84,9 +92,7 @@ public class ComportamientoAtaqueMagico1 : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-
         ia.detenerAtaqueMagico1();
-
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
